@@ -54,7 +54,11 @@ function getConsituencyIdList() public view returns(uint[]) {
         return consituencyList;
     }
 ```
-*
+* addCandidate()- 
+  * check if admin registering himself as candidate, if yes throw "Admin can't be a candidate" Error else 
+  * check if candidate is registred or not, if yes throw "Candidate already exist" Error else
+  * add candidate in candidateList.
+  * add candidate to its consituency  
 ```solidity
 function addCandidate(address _candidateId, string _name, string _email, string _phoneNo, uint _consituencyId, string _party) public onlyAdmin{
         // check if admin is registering himself as candidate
@@ -75,10 +79,126 @@ function addCandidate(address _candidateId, string _name, string _email, string 
         // add candidate to its consituency
         consituencyData[_consituencyId].candidates.push(_candidateId);
     }
+  ```
+  * getCandidateIdList()- return candidateList
+  ```-solidity
     
     function getCandidatesIdList() public view returns(address[]) {
         return candidateList;
     }
 ```
+*  getCandidateIdList()- return candidateList.
+
+```solidity
+  function getCandidatesIdList() public view returns(address[]) {
+         return candidateList;
+     }
+```
+
+* getConsituencyCandidates()- return candidates.
+
+```solidity
+  function getConsituencyCandidates(uint _consituencyId) public view returns(address[]) {
+        return consituencyData[_consituencyId].candidates;
+    }
+
+```
+* getCandidateConsituency() - return candidate consituencyId.
+```solidity
+   function getCandidateConsituency () public view returns(uint) {
+        return candidateData[msg.sender].consituencyId;
+    }
+```
+*
+
+```solidity
+ function addVoter(address _voterId, string _name, string _email,string _phoneNo, uint _consituencyId, uint8 _age) 
+         public onlyAdmin{
+         // check if admin is registering himself
+         require(admin != _voterId, "Admin can't be a voter");
+         // It will check if voter is registered or not
+         require(!voterExist[_voterId], "Voter already exist!");
+
+         votersList.push(_voterId);
+
+         voterExist[_voterId] = true;
+
+         voterData[_voterId].voterId = _voterId;
+         voterData[_voterId].name = _name;
+         voterData[_voterId].email = _email;
+         voterData[_voterId].phoneNo = _phoneNo;
+         voterData[_voterId].consituencyId = _consituencyId;
+         voterData[_voterId].age = _age;
+         voterData[_voterId].voted = false;
+
+         // add voter to its consituency
+         consituencyData[_consituencyId].voters.push(_voterId);
+     }
+
+```
+*
+```solidity
+  function getVotersIdList() public view returns(address[]) {
+        return votersList;
+    }
+```
+*
+```solidity
+function getConsituencyVoters(uint _consituencyId) public view returns(address[]) {
+        return consituencyData[_consituencyId].voters;
+    }
+```
+*
+```solidity
+function getVoterConsituency() public view returns(uint) {
+        return voterData[msg.sender].consituencyId;
+    }
+```
+*
+```solidity
+
+function castVote(uint _consituencyId, address _candidateId) public returns(bool status) {
+         //election must be active
+        require(electionStatus, "Election must be on/active");
+
+        // admin can't cast a vote
+        require(admin != msg.sender, "Admin can't cast a vote");
+
+        // check if voter has voted or not
+        require(!voterData[msg.sender].voted, "Voter already casted his vote");
+        
+        // check if candidate is of respective consituency
+        if(candidateData[_candidateId].consituencyId == _consituencyId) {
+            consituencyData[_consituencyId].votes[_candidateId] += 1;
+            voterData[msg.sender].voted = true;
+            return true;
+        }else {
+            return false;
+        }
+    }
+```
+*
+```solidity
+function getVotes(uint _consituencyId, address _candidateId) public view returns(uint) {
+        return consituencyData[_consituencyId].votes[_candidateId];
+    }
+
+```
+*
+```solidity
+function closeElection() public onlyAdmin {
+        require(now > electionDuration, "Election is not completed");
+        require(electionStatus, "Election is not active");
+        electionStatus = false;
+    }
+
+```
+
+
+
+
+
+
+
 
     
