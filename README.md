@@ -18,7 +18,7 @@ ElectionFactory Contract used to create new instances of Election contract & sto
 * Display Voters;
 
 
-NOTE:[This project is forked of] (https://github.com/schadokar/election-ethereum-react-dapp), added some new features has been added.
+NOTE:[This project is forked of] (https://github.com/schadokar/election-ethereum-react-dapp) some new features has been added.
 
 
 
