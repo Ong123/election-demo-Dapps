@@ -87,10 +87,13 @@ contract Election {
     mapping (address => bool) public voterExist;
     mapping (address => Voter) public voterData;
     
+    
     address[] public candidateList;
     mapping (address => bool) public candidateExist;
     mapping (address => Candidate) public candidateData;
 
+
+    uint public countConsituency;
     uint[] public consituencyList;
     mapping (uint => bool) public consituencyExist;
     mapping (uint => Consituency) public consituencyData;
@@ -116,7 +119,9 @@ contract Election {
 
    function addConsituency(uint _consituencyId, string memory _name) public onlyAdmin {
         require(!consituencyExist[_consituencyId], "Consituency already exist");
+        require(countConsituency <= noOfSeats,"Sorry Consituency is full");
         consituencyExist[_consituencyId] = true;
+        countConsituency = countConsituency + 1;
         consituencyData[_consituencyId].consituencyId = _consituencyId;
         consituencyData[_consituencyId].name = _name;
         consituencyList.push(_consituencyId);
@@ -210,3 +215,6 @@ contract Election {
         electionStatus = false;
         emit ClosedElectionEvent(electionStatus);
     }
+}
+
+
