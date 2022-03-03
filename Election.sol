@@ -36,12 +36,14 @@ contract ElectionFactory is CloneFactory {
 
     address public _electionManager;
     Election[] public electionConducted;
-    address public masterContract;
+    address public electionContractAddress;
 
     event ElectionEvent(address _admin, Election election);
 
-      constructor(){
+      constructor(address _electionContractAddress){
         _electionManager = msg.sender;
+        electionContractAddress = _electionContractAddress;
+
     }
 
      modifier onlyElectionManager() {
@@ -50,18 +52,13 @@ contract ElectionFactory is CloneFactory {
     }
 
     function isOwner() public view returns(bool) {
-        return msg.sender == _electionManager;
+        require(msg.sender == _electionManager);
+        return true;
     }
 
-     function setMasterContractAddress(address _masterContract) external onlyElectionManager {
-        masterContract = _masterContract;
-    }
-
-
-
-
+     
     function createElection (string memory _electionName, uint _noOfSeats,string memory _state, uint _electionDurationInMinutes) public onlyElectionManager {
-        Election election = Election(createClone(masterContract));
+        Election election = Election(createClone(electionContractAddress));
         election.initialize(_electionName,_noOfSeats,_state,_electionDurationInMinutes, payable(msg.sender));
         electionConducted.push(election);
     }
