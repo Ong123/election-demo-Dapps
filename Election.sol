@@ -60,9 +60,9 @@ contract ElectionFactory is CloneFactory {
 
 
 
-    function createElection (string memory _electionName, uint _noOfSeats, uint _electionDurationInMinutes) public onlyElectionManager {
+    function createElection (string memory _electionName, uint _noOfSeats,string memory _state, uint _electionDurationInMinutes) public onlyElectionManager {
         Election election = Election(createClone(masterContract));
-        election.initialize(_electionName,_noOfSeats,_electionDurationInMinutes, payable(msg.sender));
+        election.initialize(_electionName,_noOfSeats,_state,_electionDurationInMinutes, payable(msg.sender));
         electionConducted.push(election);
     }
 
@@ -81,10 +81,12 @@ contract Election {
     event ClosedElectionEvent(bool _electionStatus);
 
     address public admin;
+    string state;
     uint public noOfSeats;
     string public electionName;
     bool electionStatus;
     uint electionDuration;
+    
 
     struct Voter {
         address voterId;
@@ -143,10 +145,11 @@ contract Election {
     mapping(uint => bool) public partyExit;
     mapping(uint => Party) public partyData;
     
-    function initialize( string memory _electionName, uint _noOfSeats, uint _electionDurationInMinutes, address payable _admin) external {
+    function initialize( string memory _electionName, uint _noOfSeats,string memory _state, uint _electionDurationInMinutes, address payable _admin) external {
         admin = _admin;
         electionName = _electionName;
         noOfSeats = _noOfSeats;
+        state = _state;
         electionStatus = true;
         electionDuration = block.timestamp +(_electionDurationInMinutes * 60); 
     }
