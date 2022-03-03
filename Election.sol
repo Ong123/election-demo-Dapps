@@ -36,6 +36,7 @@ contract ElectionFactory is CloneFactory {
 
     address public _electionManager;
     Election[] public electionConducted;
+    address public masterContract;
 
     event ElectionEvent(address _admin, Election election);
 
@@ -52,10 +53,15 @@ contract ElectionFactory is CloneFactory {
         return msg.sender == _electionManager;
     }
 
-    
-    
+     function setMasterContractAddress(address _masterContract) external onlyElectionManager {
+        masterContract = _masterContract;
+    }
+
+
+
+
     function createElection (string memory _electionName, uint _noOfSeats, uint _electionDurationInMinutes) public onlyElectionManager {
-        Election election = Election(createClone(_electionManager));
+        Election election = Election(createClone(masterContract));
         election.initialize(_electionName,_noOfSeats,_electionDurationInMinutes, payable(msg.sender));
         electionConducted.push(election);
     }
